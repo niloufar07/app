@@ -15,6 +15,24 @@ mobility_matrix_url = "https://raw.githubusercontent.com/niloufar07/app/main/mat
 city_data_url = "https://raw.githubusercontent.com/niloufar07/app/main/updated_city_coordinates%20.geojson"
 road_data_url = "https://raw.githubusercontent.com/niloufar07/app/main/Apugliamain.geojson"
 
+# Check if the URLs are accessible
+try:
+    mobility_matrix = pd.read_csv(mobility_matrix_url, index_col=0)
+except Exception as e:
+    st.error(f"Failed to load mobility matrix: {e}")
+    st.stop()
+
+try:
+    city_data = gpd.read_file(city_data_url)
+except Exception as e:
+    st.error(f"Failed to load city data: {e}")
+    st.stop()
+
+try:
+    road_data = gpd.read_file(road_data_url)
+except Exception as e:
+    st.error(f"Failed to load road data: {e}")
+    st.stop()
 
 # Define bounding box for Bari Province
 minx, miny, maxx, maxy = 16.291, 40.712, 17.517, 41.322
@@ -92,7 +110,13 @@ for city1 in city_to_nearest_road_node.keys():
             except KeyError:
                 continue
 
+# Visualize the directed city graph
+plt.figure(figsize=(20, 8))
+pos = nx.get_node_attributes(city_graph, 'pos')
+nx.draw(city_graph, pos, with_labels=True, node_size=2000, node_color='lightblue', font_size=8, font_weight='bold', arrowstyle='->', arrowsize=20, edge_color='darkgrey')
 
+plt.title("City-to-City Mobility Network in Bari Province")
+st.pyplot(plt)
 
 # Visualize on a folium map
 cities_gdf = gpd.GeoDataFrame(bari_cities_gdf, crs='EPSG:4326')
