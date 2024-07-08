@@ -110,13 +110,6 @@ for city1 in city_to_nearest_road_node.keys():
             except KeyError:
                 continue
 
-# Visualize the directed city graph
-plt.figure(figsize=(20, 8))
-pos = nx.get_node_attributes(city_graph, 'pos')
-nx.draw(city_graph, pos, with_labels=True, node_size=2000, node_color='lightblue', font_size=8, font_weight='bold', arrowstyle='->', arrowsize=20, edge_color='darkgrey')
-
-plt.title("City-to-City Mobility Network in Bari Province")
-st.pyplot(plt)
 
 # Visualize on a folium map
 cities_gdf = gpd.GeoDataFrame(bari_cities_gdf, crs='EPSG:4326')
