@@ -5,3 +5,4 @@ networkx
 shapely
 matplotlib
 folium
+streamlit-folium
