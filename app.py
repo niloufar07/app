@@ -12,9 +12,10 @@ st.title("Map of Bari Province with Cities and Bounding Box")
 
 # Load the data for Bari
 mobility_matrix_url = "https://raw.githubusercontent.com/niloufar07/app/main/matrix.csv"
-city_data_url = "https://raw.githubusercontent.com/niloufar07/app/main/updated_city_coordinates.geojson"
+city_data_url = "https://raw.githubusercontent.com/niloufar07/app/main/updated_city_coordinates%20.geojson"
 road_data_url = "https://raw.githubusercontent.com/niloufar07/app/main/Apugliamain.geojson"
 
+# Check if the URLs are accessible
 try:
     mobility_matrix = pd.read_csv(mobility_matrix_url, index_col=0)
 except Exception as e:
