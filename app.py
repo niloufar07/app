@@ -8,10 +8,30 @@ import json
 import streamlit as st
 from streamlit_folium import folium_static
 
+st.title("Map of Bari Province with Cities and Bounding Box")
+
 # Load the data for Bari
-mobility_matrix = pd.read_csv(r"https://raw.githubusercontent.com/niloufar07/app/main/matrix.csv", index_col=0)
-city_data = gpd.read_file(r"https://raw.githubusercontent.com/niloufar07/app/main/updated_city_coordinates.geojson")
-road_data = gpd.read_file(r"https://raw.githubusercontent.com/niloufar07/app/main/Apugliamain.geojson")
+mobility_matrix_url = "https://raw.githubusercontent.com/niloufar07/app/main/matrix.csv"
+city_data_url = "https://raw.githubusercontent.com/niloufar07/app/main/updated_city_coordinates.geojson"
+road_data_url = "https://raw.githubusercontent.com/niloufar07/app/main/Apugliamain.geojson"
+
+try:
+    mobility_matrix = pd.read_csv(mobility_matrix_url, index_col=0)
+except Exception as e:
+    st.error(f"Failed to load mobility matrix: {e}")
+    st.stop()
+
+try:
+    city_data = gpd.read_file(city_data_url)
+except Exception as e:
+    st.error(f"Failed to load city data: {e}")
+    st.stop()
+
+try:
+    road_data = gpd.read_file(road_data_url)
+except Exception as e:
+    st.error(f"Failed to load road data: {e}")
+    st.stop()
 
 # Define bounding box for Bari Province
 minx, miny, maxx, maxy = 16.291, 40.712, 17.517, 41.322
@@ -65,14 +85,14 @@ for idx, city in bari_cities_gdf.iterrows():
     city_point = city['geometry']
     nearest_node_geom = find_nearest_road_node(city_point, road_nodes_gdf)
     nearest_node_coords = (nearest_node_geom.x, nearest_node_geom.y)
-    
+
     G.add_node(city_name, pos=(city_point.x, city_point.y))
     pos[city_name] = (city_point.x, city_point.y)
-    
+
     if nearest_node_coords not in pos:
         G.add_node(nearest_node_coords, pos=nearest_node_coords)
         pos[nearest_node_coords] = nearest_node_coords
-    
+
     G.add_edge(city_name, nearest_node_coords, weight=0)
     city_to_nearest_road_node[city_name] = nearest_node_coords
 
@@ -88,6 +108,14 @@ for city1 in city_to_nearest_road_node.keys():
                     city_graph.add_edge(city1, city2, weight=weight)
             except KeyError:
                 continue
+
+# Visualize the directed city graph
+plt.figure(figsize=(20, 8))
+pos = nx.get_node_attributes(city_graph, 'pos')
+nx.draw(city_graph, pos, with_labels=True, node_size=2000, node_color='lightblue', font_size=8, font_weight='bold', arrowstyle='->', arrowsize=20, edge_color='darkgrey')
+
+plt.title("City-to-City Mobility Network in Bari Province")
+st.pyplot(plt)
 
 # Visualize on a folium map
 cities_gdf = gpd.GeoDataFrame(bari_cities_gdf, crs='EPSG:4326')
@@ -105,6 +133,9 @@ for idx, row in cities_gdf.iterrows():
 
 # Add bounding box to the map for visual reference
 folium.GeoJson(json.loads(gpd.GeoSeries([bari_bbox]).to_json()), name='Bounding Box', style_function=lambda x: {'color': 'green', 'weight': 2, 'fillOpacity': 0.1}).add_to(bari_map)
+
+# Add Layer Control to the map
+folium.LayerControl().add_to(bari_map)
 
 # Display the map
 folium_static(bari_map)
