@@ -9,9 +9,9 @@ import streamlit as st
 from streamlit_folium import folium_static
 
 # Load the data for Bari
-mobility_matrix = pd.read_csv(r"C:\Users\Nilofar\Desktop\mobility\matrix.csv", index_col=0)
-city_data = gpd.read_file(r"C:\Users\Nilofar\Desktop\mobility\updated_city_coordinates .geojson")
-road_data = gpd.read_file(r"C:\Users\Nilofar\Desktop\Roads Italy\Roads Geojson\Apugliamain.geojson")
+mobility_matrix = pd.read_csv(r"https://raw.githubusercontent.com/niloufar07/app/main/matrix.csv", index_col=0)
+city_data = gpd.read_file(r"https://raw.githubusercontent.com/niloufar07/app/main/updated_city_coordinates .geojson")
+road_data = gpd.read_file(r"https://raw.githubusercontent.com/niloufar07/app/main/Apugliamain.geojson")
 
 # Define bounding box for Bari Province
 minx, miny, maxx, maxy = 16.291, 40.712, 17.517, 41.322
